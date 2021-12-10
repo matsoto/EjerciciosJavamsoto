@@ -44,124 +44,157 @@ public class Ej16CajeroAutomatico {
     public static void main(String[] args) {
         
       int saldo = 20000;
-      int saldoFinal = 0;
       String claveAcceso = "123456"; 
-      int i=1,j=1;
-      int longCbu = 16;
-      int importeTransferir= 0;
-       
-      String nroCBU = "";
+      String[] claves = new String[]{"123456","clavehome","clavetel"};
+   
+      int j=1, i=0;
+      int seleccion =0;
       String contraseña;
-      String ctaemisoraCBU = "1234567891011121";     
-//Creo el logo del banco
+        
+
+      //Creo el logo del banco
       ImageIcon icon = new ImageIcon ("src/Imagenes/bancodelsol.png");
       JOptionPane.showMessageDialog(null,"","BANCO",JOptionPane.INFORMATION_MESSAGE,icon);
       
       // Solicito la contraseña
-          
-     //String menu [] = {"Saldo","Transferir","Retirar","Cambiar Clave","Salir","Consultar Saldo"};
-     //Object seleccion = JOptionPane.showInputDialog(null,"Seleccion una opcion","Menu",JOptionPane.QUESTION_MESSAGE,null,menu,menu[0]);
       do{
         contraseña = JOptionPane.showInputDialog("Ingrese su contraseña"); 
         
         if(contraseña.equals(claveAcceso)){
             
-           System.out.println("Acceso correto");
+           System.out.println("Acceso correcto");
            j=4;
         }else{
-            System.out.println("Contraseña ingrese nuevamente, intento" +i + " de 3 ");}
+            System.out.println("Contraseña ingrese nuevamente, intento" +j + " de 3 ");}
         j++;
+        if (j==4){System.exit(0);}
+            
       }while(j<4);
       
       //Menu de opciones
-      int seleccion = JOptionPane.showOptionDialog( null,"Seleccione una opcion","MENU",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null, new Object[] { "1. Saldo", "2. Transferir", "3. Retirar", "4. Cambiar Clave" ,"5. Salir"},"1. Saldo"); 
-      System.out.println("Seleccion:" +seleccion);
-  
-      //Consulta de Saldo
-      switch (seleccion){
-          case 0:
+      do {
+                seleccion = Integer.parseInt(JOptionPane.showInputDialog(null, "1. Saldo\n2. Transferir\n3. Extracción\n4. Cambio de Clave\n5. Salir"));
+                System.out.println("Seleccion:" +seleccion);
+                switch(seleccion) {
+                    case 1:
+                    saldo(saldo);
+                    break;
+                    case 2:
+                    saldo = transferir(saldo);
+                    break;
+                    case 3:
+                    saldo = extraccionDinero(saldo);
+                    break;
+                    case 4:
+                    claves = cambioClave(claves);
+                }
+            } while(seleccion!=5);
+     } 
+    
+   // MODULO 1 Impresion de saldo
+    public static void saldo(int saldo) {
                 System.out.println("Consultando Saldo");
-                JOptionPane.showMessageDialog(null,"SALDO: " +saldo,"BANCO DEL SOL",JOptionPane.INFORMATION_MESSAGE);     
-          break;
-          case 1:                
-                do{
-                   nroCBU = JOptionPane.showInputDialog(null,"Ingrese los numeros de un CBU a transferir: ");
-                
+                JOptionPane.showMessageDialog(null,"SALDO: " +saldo,"BANCO DEL SOL",JOptionPane.INFORMATION_MESSAGE);
+   }  
+    
+    //Modulo 2 Transferencia
+    public static int transferir(int saldo) {
+        
+        String nroCBU = "";
+        int longCbu = 22;
+        int importeTransferir= 0;
+        String emisoraCBU = "1234567891011121250215";
+        int i=1;
+       
+        //Ingresar CBU
+        do{
+                nroCBU = JOptionPane.showInputDialog(null,"Ingrese los numeros de un CBU a transferir: ");
                 if(nroCBU.length() == longCbu){  
                     System.out.println("CBU Correcto");
                     i=3;
                     importeTransferir = Integer.parseInt(JOptionPane.showInputDialog("Ingresar el monto a transferir: "));
-                   
                     if(importeTransferir>=saldo){
                         JOptionPane.showMessageDialog(null,"Atencion la transferencia es mayor que el saldo y no puede ser realizada","BANCO DEL SOL",JOptionPane.ERROR_MESSAGE );
                         }else{
-                            saldoFinal = saldo - importeTransferir;
+                            saldo = saldo - importeTransferir;
                         }  
                 }else{
-                    JOptionPane.showMessageDialog(null,"Por favor ingresar 16 DIGITOS! Intento: "+i, "BANCO DEL SOL",JOptionPane.ERROR_MESSAGE );   
+                    JOptionPane.showMessageDialog(null,"Por favor ingresar 22 DIGITOS! Intento: "+i, "BANCO DEL SOL",JOptionPane.ERROR_MESSAGE );   
                 }
                  i++;
-                }while(i<4);                          
-          break; 
-          
-          case 2:
-                int retiro = JOptionPane.showOptionDialog(null,"Seleccione un monto a retirar","RETIRO",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null, new Object[]{ "200","500","1000","2000","OTRO MONTO"},"200");
+                }while(i<4);       
+        JOptionPane.showMessageDialog(null,"BANCO SOL\n\nCBU Emisora: "+ emisoraCBU + "\nTranferencia a CBU: "+ nroCBU + "\nMonto de la transferencia: "+ importeTransferir+"\nSaldo actual: "+ saldo, "BANCO SOL",JOptionPane.INFORMATION_MESSAGE );
+        return saldo;
+    }
+    
+    //Modulo 3 Extraccion
+     public static int extraccionDinero(int saldo) {
+        int montoExtraccion=0, retiro =0;
+        String[] opciones = {"200","500","1000","2000","Otro Importe"};
+        
+             retiro = JOptionPane.showOptionDialog(null,"Seleccione un monto a retirar","RETIRO",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null, new Object[]{ "200","500","1000","2000","OTRO MONTO"},"200");
                 
                 if(retiro == 0){
                         System.out.println("Eligio 200");
-                        
-                        saldoFinal = saldo - 200;
-                        JOptionPane.showMessageDialog(null,"Realizo una extraccion de $200" + "\nSu saldo es de: " +saldoFinal,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);                   
+                        montoExtraccion = 200;
+                        saldo = saldo - montoExtraccion;
+                        JOptionPane.showMessageDialog(null,"Realizo una extraccion de $200" + "\nSu saldo es de: " +saldo,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);                   
                 }
-                if(retiro == 1){System.out.println("Eligio 500"); saldoFinal = saldo - 500; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $500" + "\nSu saldo final es: " +saldoFinal,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
+                if(retiro == 1){System.out.println("Eligio 500"); montoExtraccion = 500; saldo = saldo - montoExtraccion; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $500" + "\nSu saldo final es: " +saldo,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
                 }
-                if(retiro == 2){System.out.println("Eligio 1000"); saldoFinal = saldo - 1000; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $1000" + "\nSu saldo final es: " +saldoFinal,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
+                if(retiro == 2){System.out.println("Eligio 1000"); montoExtraccion = 1000; saldo = saldo - montoExtraccion; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $1000" + "\nSu saldo final es: " +saldo,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
                 }
-                if(retiro == 3){System.out.println("Eligio 2000"); saldoFinal = saldo - 2000; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $2000" + "\nSu saldo final es: " +saldoFinal,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
+                if(retiro == 3){System.out.println("Eligio 2000"); montoExtraccion = 2000; saldo = saldo - montoExtraccion; JOptionPane.showMessageDialog(null,"Realizo una extraccion de $2000" + "\nSu saldo final es: " +saldo,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
                 }
                 if(retiro == 4){
                     System.out.println("Eligio Otro Monto"); 
-                
                     int monto = Integer.parseInt(JOptionPane.showInputDialog("Ingrese un Monto a retirar"));
-                
                     if(saldo >= monto ) {
-                    saldoFinal = saldo - monto;
-                
-                    JOptionPane.showMessageDialog(null,"Saldo en cuenta: " +saldo+ "\nRealizo una extraccion de: " +monto+ "\nSu saldo final es de: " +saldoFinal,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
+                    saldo = saldo - monto;
+                    JOptionPane.showMessageDialog(null,"Saldo en cuenta: " +saldo+ "\nRealizo una extraccion de: " +monto+ "\nSu saldo final es de: " +saldo,"TICKET EXTRACCION",JOptionPane.INFORMATION_MESSAGE);
                     }else{
                           JOptionPane.showMessageDialog(null,"El monto a retirar es mayor al saldo actual!","TICKET EXTRACCION",JOptionPane.WARNING_MESSAGE );
-                    }
-                }    
-          break;
-          case 3: //Menu cambio de clave          
-          int cambio = JOptionPane.showOptionDialog(null,"Opciones del menu","BANCO DEL SOL",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,new Object[] {"HOME BANKING","CLAVE TELEFONICA","CAJERO"},"HOME BANKING");
-          
-          if(cambio == 0 ){
-              String cambioDeClave = JOptionPane.showInputDialog("Ingrese una nueva contraseña de Home Banking: ");
-          }
-          if(cambio == 1 ){
-          }
-          if(cambio == 2 ){
-          }
-          
-          break;
-          
-          default:         
+                    } 
+            }         
+        return saldo;
+       }
+ 
+    public static String[] cambioClave(String[]claves) { 
+        String passwordNuevo="";
+        String encriptado = "*******";
+        String[] opciones = {"Homebanking","Clave Telefónica","Clave de Cajero"};
+        Object opcion = JOptionPane.showInputDialog(null,"Seleccionar canal para el cambio de clave:","BANCO",JOptionPane.QUESTION_MESSAGE,null, opciones,opciones[0]);
+        System.out.println(opcion);
+        
+        switch ((String)opcion) {
+            case "Homebanking":
+                passwordNuevo=JOptionPane.showInputDialog(null,"Ingresar nueva Clave de Homebanking:");
+                if (!passwordNuevo.equals(claves[1])) {
+                    claves[1]=passwordNuevo;    
+                    JOptionPane.showMessageDialog(null, "Se cambio su contraseña de Home Banking "+encriptado, "Banco del Sol", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "La nueva Clave de Homebanking es igual a la anterior","",JOptionPane.ERROR_MESSAGE);
+                }
+                break;
+            case "Clave Telefónica":
+                if (!passwordNuevo.equals(claves[2]))  {
+                passwordNuevo=JOptionPane.showInputDialog(null,"Ingresar nueva Clave Telefonica:");
+                claves[2]=passwordNuevo;
+                JOptionPane.showMessageDialog(null, "Se cambio su contraseña de Telefonica"+encriptado, "Banco del Sol", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "La nueva Clave Telefonica es igual a la anterior","",JOptionPane.ERROR_MESSAGE);
+                }
+                break;
+            case "Clave de Cajero":
+                if (!passwordNuevo.equals(claves[0])) {
+                passwordNuevo=JOptionPane.showInputDialog(null,"Ingresar nueva Clave de Cajero:");
+                claves[0]=passwordNuevo;
+                JOptionPane.showMessageDialog(null, "Se cambio su contraseña de Cajero "+encriptado, "Banco del Sol", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "La nueva Clave de Cajero es igual a la anterior","",JOptionPane.ERROR_MESSAGE);
+                }
+                break;
         }
-      
-      System.out.println("---------------Cajero Automatico------------");
-      System.out.println("Datos de transaccion: ");
-      System.out.println("CBU Origen: "+ctaemisoraCBU);
-      System.out.println("CBU Destino: "+nroCBU);
-      System.out.println("Importe enviado: " +importeTransferir);
-      System.out.println("Saldo fila en cta: "+saldoFinal );
-      
-      
-      
-
-    
-    
-     }
-      
-    
+        return claves;
+    }     
 }
